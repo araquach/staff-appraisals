@@ -1,0 +1,33 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+staff-appraisals
+
+# Go build cache & modules
+bin/
+pkg/
+vendor/
+
+# Logs
+*.log
+
+# Env files
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+
+# macOS files
+.DS_Store
+
+# Data folders
+data/transactions/
+data/clients/
+data/reviews/
+
+# Migrate lock
+*.lock
