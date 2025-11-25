@@ -57,6 +57,8 @@ func Open(dsn string) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	log.Println("🧪 Effective GORM log level:", lvl)
+
 	return gdb, nil
 }
 

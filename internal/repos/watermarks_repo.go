@@ -17,23 +17,26 @@ func NewWatermarksRepo(db *gorm.DB, lg *log.Logger) *WatermarksRepo {
 	return &WatermarksRepo{db: db, lg: lg}
 }
 
-// SyncWatermark matches the sync_watermarks table schema.
-// (We only use it for reads; writes use raw SQL upsert.)
+// SyncWatermark matches the *current* sync_watermarks schema.
 type SyncWatermark struct {
-	SourceName    string     `gorm:"column:source_name;primaryKey"`
-	BranchID      string     `gorm:"column:branch_id;primaryKey"`
-	LastUpdatedAt *time.Time `gorm:"column:last_updated_at"`
-	LastRunAt     time.Time  `gorm:"column:last_run_at"`
+	ID                 int64      `gorm:"primaryKey;column:id"`
+	Entity             string     `gorm:"column:entity"`               // e.g. "clients_csv", "transactions_csv"
+	BranchID           *string    `gorm:"column:branch_id"`            // NULL or branch id, or "ALL" for global
+	LastUpdatedPhorest *time.Time `gorm:"column:last_updated_phorest"` // watermark
+	CreatedAt          time.Time  `gorm:"column:created_at"`
+	UpdatedAt          time.Time  `gorm:"column:updated_at"`
 }
 
 func (SyncWatermark) TableName() string { return "sync_watermarks" }
 
-// Get returns the last_updated_at for a given (source, branchID).
-// If no row exists, it returns (nil, nil).
-func (r *WatermarksRepo) Get(source, branchID string) (*time.Time, error) {
+// GetLastUpdated returns the last_updated_phorest for (entity, branchID).
+// For global sources like clients, pass branchID = "ALL".
+func (r *WatermarksRepo) GetLastUpdated(entity, branchID string) (*time.Time, error) {
+	branchID = normaliseBranchID(branchID)
+
 	var wm SyncWatermark
 	err := r.db.
-		Where("source_name = ? AND branch_id = ?", source, branchID).
+		Where("entity = ? AND branch_id = ?", entity, branchID).
 		First(&wm).Error
 
 	if err == gorm.ErrRecordNotFound {
@@ -42,24 +45,34 @@ func (r *WatermarksRepo) Get(source, branchID string) (*time.Time, error) {
 	if err != nil {
 		return nil, err
 	}
-	return wm.LastUpdatedAt, nil
+	return wm.LastUpdatedPhorest, nil
 }
 
-// UpsertMax advances the watermark if candidate is newer.
-// If candidate is nil or zero, it does nothing.
-func (r *WatermarksRepo) UpsertMax(source, branchID string, candidate *time.Time) error {
-	if candidate == nil || candidate.IsZero() {
+// UpsertLastUpdated advances the watermark for (entity, branchID) if candidate is newer.
+// For global sources like clients, pass branchID = "ALL" (or "") – "" will be normalised.
+func (r *WatermarksRepo) UpsertLastUpdated(entity, branchID string, candidate time.Time) error {
+	if candidate.IsZero() {
 		return nil
 	}
 
+	branchID = normaliseBranchID(branchID)
+
 	r.lg.Printf("💾 Updating watermark for %s/%s → %s",
-		source, branchID, candidate.UTC().Format(time.RFC3339))
+		entity, branchID, candidate.UTC().Format(time.RFC3339))
 
 	return r.db.Exec(`
-INSERT INTO sync_watermarks (source_name, branch_id, last_updated_at, last_run_at)
-VALUES (?, ?, ?, now())
-ON CONFLICT (source_name, branch_id) DO UPDATE
-SET last_updated_at = GREATEST(sync_watermarks.last_updated_at, EXCLUDED.last_updated_at),
-    last_run_at     = now();
-`, source, branchID, candidate.UTC()).Error
+INSERT INTO sync_watermarks (entity, branch_id, last_updated_phorest, created_at, updated_at)
+VALUES (?, ?, ?, now(), now())
+ON CONFLICT (entity, branch_id) DO UPDATE
+SET last_updated_phorest = GREATEST(sync_watermarks.last_updated_phorest, EXCLUDED.last_updated_phorest),
+    updated_at           = now();
+`, entity, branchID, candidate.UTC()).Error
+}
+
+func normaliseBranchID(branchID string) string {
+	// Canonical "global" key
+	if branchID == "" {
+		return "ALL"
+	}
+	return branchID
 }

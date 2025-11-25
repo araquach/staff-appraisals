@@ -25,9 +25,8 @@ vendor/
 .DS_Store
 
 # Data folders
-data/transactions/
-data/clients/
-data/reviews/
+data/*
+!data/.gitkeep
 
 # Migrate lock
 *.lock

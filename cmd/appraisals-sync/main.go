@@ -75,4 +75,9 @@ func main() {
 		logger.Printf("reviews latest-N sync ended with errors: %v", err)
 	}
 
+	if err := runner.BootstrapWatermarks(); err != nil {
+		logger.Printf("⚠️ Bootstrap watermarks failed: %v", err)
+	} else {
+		logger.Printf("✅ Bootstrap watermarks completed successfully.")
+	}
 }

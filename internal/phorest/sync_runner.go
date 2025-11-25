@@ -5,6 +5,7 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 	"staff-appraisals/internal/config"
@@ -125,6 +126,18 @@ func (r *Runner) importSingleClientsCSV(csvPath string) error {
 	}
 	lg.Printf("Importing Clients CSV %s: %d clients", csvPath, len(batch.Clients))
 
+	var maxTS *time.Time
+	for i := range batch.Clients {
+		if ts := batch.Clients[i].UpdatedAtPhorest; ts != nil {
+			if maxTS == nil || ts.After(*maxTS) {
+				maxTS = ts
+			}
+		}
+	}
+	if maxTS == nil {
+		lg.Printf("⚠️  No UpdatedAtPhorest values in %s; skipping watermark update", csvPath)
+	}
+
 	tx := r.DB.Begin()
 	if tx.Error != nil {
 		return tx.Error
@@ -140,6 +153,15 @@ func (r *Runner) importSingleClientsCSV(csvPath string) error {
 	if err := cr.UpsertBatch(batch.Clients, 1000); err != nil {
 		_ = tx.Rollback()
 		return err
+	}
+
+	if maxTS != nil {
+		wr := repos.NewWatermarksRepo(tx, lg)
+		// NOTE: branch = "ALL" for global clients CSV
+		if err := wr.UpsertLastUpdated("clients_csv", "ALL", *maxTS); err != nil {
+			_ = tx.Rollback()
+			return fmt.Errorf("update clients_csv watermark: %w", err)
+		}
 	}
 
 	if err := tx.Commit().Error; err != nil {

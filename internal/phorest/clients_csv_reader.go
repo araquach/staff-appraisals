@@ -92,24 +92,24 @@ func ParseClientsCSV(path string, lg *log.Logger) (*ParsedClients, error) {
 		}
 		return nil
 	}
-	parseTS := func(s string) *time.Time {
-		s = strings.TrimSpace(s)
-		if s == "" {
-			return nil
-		}
-		for _, layout := range []string{
-			time.RFC3339Nano,
-			time.RFC3339,
-			"2006-01-02 15:04:05",
-			"2006-01-02T15:04:05.000",
-			"2006-01-02T15:04:05",
-		} {
-			if t, err := time.Parse(layout, s); err == nil {
-				return &t
-			}
-		}
-		return nil
-	}
+	//parseTS := func(s string) *time.Time {
+	//	s = strings.TrimSpace(s)
+	//	if s == "" {
+	//		return nil
+	//	}
+	//	for _, layout := range []string{
+	//		time.RFC3339Nano,
+	//		time.RFC3339,
+	//		"2006-01-02 15:04:05",
+	//		"2006-01-02T15:04:05.000",
+	//		"2006-01-02T15:04:05",
+	//	} {
+	//		if t, err := time.Parse(layout, s); err == nil {
+	//			return &t
+	//		}
+	//	}
+	//	return nil
+	//}
 
 	// Deduplicate by newest UpdatedAtPhorest (a.k.a. CSV "updated_at")
 	byID := map[string]models.Client{}
@@ -142,8 +142,8 @@ func ParseClientsCSV(path string, lg *log.Logger) (*ParsedClients, error) {
 			LinkedClientMobile: get(rec, "linked_client_mobile"),
 			LandLine:           get(rec, "land_line"),
 			Email:              get(rec, "email"),
-			CreatedAtPhorest:   parseTS(created),
-			UpdatedAtPhorest:   parseTS(updated),
+			CreatedAtPhorest:   parseDate(created),
+			UpdatedAtPhorest:   parseDate(updated),
 			BirthDate:          parseDate(get(rec, "birth_date")),
 			Gender:             get(rec, "gender"),
 
