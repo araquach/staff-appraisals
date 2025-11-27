@@ -21,7 +21,8 @@ type Config struct {
 	PhorestPassword string
 	PhorestBusiness string
 
-	Branches []BranchConfig
+	Branches  []BranchConfig
+	ExportDir string
 
 	AutoMigrate bool
 }
@@ -38,6 +39,7 @@ func Load() *Config {
 		PhorestPassword: getEnvOrFail(logger, "PHOREST_PASSWORD"),
 		PhorestBusiness: getEnvOrFail(logger, "PHOREST_BUSINESS"),
 		AutoMigrate:     os.Getenv("AUTO_MIGRATE") == "1",
+		ExportDir:       getEnvOrDefault("EXPORT_DIR", "data/exports"),
 		Branches: []BranchConfig{
 			{
 				Name:     getEnvOrDefault("SITE_1_NAME", "Jakata"),
@@ -55,6 +57,7 @@ func Load() *Config {
 	}
 
 	logger.Printf("✅ Loaded config for %d branches\n", len(cfg.Branches))
+	logger.Printf("📁 ExportDir: %s", cfg.ExportDir)
 	return cfg
 }
 

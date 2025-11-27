@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"os"
 	"staff-appraisals/internal/phorest"
 	"time"
 
@@ -14,6 +16,11 @@ func main() {
 
 	cfg := config.Load()
 	logger := cfg.Logger
+
+	if err := os.MkdirAll(cfg.ExportDir, 0o755); err != nil {
+		logger.Fatalf("create export dir %q: %v", cfg.ExportDir, err)
+	}
+	logger.Printf("📂 Using export dir: %s", cfg.ExportDir)
 
 	gdb, err := db.Open(cfg.DatabaseURL)
 	if err != nil {
@@ -79,5 +86,23 @@ func main() {
 		logger.Printf("⚠️ Bootstrap watermarks failed: %v", err)
 	} else {
 		logger.Printf("✅ Bootstrap watermarks completed successfully.")
+	}
+
+	if os.Getenv("RUN_CLIENTS_INCREMENTAL") == "1" {
+		logger.Println("🚀 Running incremental CLIENT_CSV sync…")
+
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+		defer cancel()
+
+		if err := runner.RunIncrementalClientsSync(ctx); err != nil {
+			logger.Fatalf("CLIENT_CSV incremental sync failed: %v", err)
+		}
+
+		logger.Println("✅ Incremental CLIENT_CSV sync complete.")
+
+		logger.Println("🚀 Running incremental TRANSACTIONS_CSV sync…")
+		if err := runner.RunIncrementalTransactionsSync(ctx); err != nil {
+			logger.Fatalf("TRANSACTIONS_CSV incremental sync failed: %v", err)
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package phorest
 
 import (
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -138,6 +139,10 @@ func ParseTransactionsCSV(path string, lg *log.Logger) (*ParsedBatch, error) {
 			return nil, fmt.Errorf("read row %d: %w", row, err)
 		}
 		row++
+
+		for i := range rec {
+			rec[i] = cleanUTF8(rec[i])
+		}
 
 		transactionID := get(rec, "transaction_id")
 		if transactionID == "" {
@@ -324,4 +329,8 @@ func ParseTransactionsCSV(path string, lg *log.Logger) (*ParsedBatch, error) {
 
 	lg.Printf("Parsed CSV: %d transactions, %d items", len(transactions), len(items))
 	return &ParsedBatch{Transactions: transactions, Items: items}, nil
+}
+
+func cleanUTF8(s string) string {
+	return string(bytes.ToValidUTF8([]byte(s), []byte("?")))
 }

@@ -38,12 +38,18 @@ func ParseClientsCSV(path string, lg *log.Logger) (*ParsedClients, error) {
 		idx[strings.TrimSpace(strings.ToLower(h))] = i
 	}
 
+	clean := func(s string) string {
+		// force UTF-8 by decoding into runes and back out
+		// invalid byte sequences become the replacement rune, but still valid UTF-8
+		return string([]rune(s))
+	}
+
 	get := func(rec []string, name string) string {
 		i, ok := idx[name]
 		if !ok || i >= len(rec) {
 			return ""
 		}
-		return rec[i]
+		return clean(rec[i])
 	}
 	parseInt := func(s string) int {
 		s = strings.TrimSpace(s)

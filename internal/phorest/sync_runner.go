@@ -16,14 +16,22 @@ type Runner struct {
 	DB     *gorm.DB
 	Cfg    *config.Config
 	Logger *log.Logger
+	Export *ExportClient
 }
 
 // Accept cfg and store it so r.Cfg is valid everywhere
 func NewRunner(db *gorm.DB, cfg *config.Config, lg *log.Logger) *Runner {
+	export := NewExportClient(
+		cfg.PhorestUsername,
+		cfg.PhorestPassword,
+		cfg.PhorestBusiness,
+	)
+
 	return &Runner{
 		DB:     db,
 		Cfg:    cfg,
 		Logger: lg,
+		Export: export,
 	}
 }
 
