@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/araquach/phorest-datahub/internal/models"
 	"gorm.io/gorm"
-	"staff-appraisals/internal/models"
 )
 
 type TransactionsRepo struct {

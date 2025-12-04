@@ -1,4 +1,4 @@
-module staff-appraisals
+module github.com/araquach/phorest-datahub
 
 go 1.24
 

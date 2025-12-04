@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"staff-appraisals/internal/models"
+	"github.com/araquach/phorest-datahub/internal/models"
 )
 
 type PhProductStockRepo struct {

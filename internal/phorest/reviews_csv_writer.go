@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"staff-appraisals/internal/models"
+	"github.com/araquach/phorest-datahub/internal/models"
 )
 
 func writeReviewsCSV(path string, rows []models.Review) error {

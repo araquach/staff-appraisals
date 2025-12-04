@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"staff-appraisals/internal/models"
-	"staff-appraisals/internal/repos"
+	"github.com/araquach/phorest-datahub/internal/models"
+	"github.com/araquach/phorest-datahub/internal/repos"
 )
 
 // BootstrapReviewsFromCSVsIfNeeded:

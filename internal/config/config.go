@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"staff-appraisals/internal/util"
+	"github.com/araquach/phorest-datahub/internal/util"
 )
 
 // BranchConfig holds the name + ID of each branch.

@@ -3,8 +3,8 @@ package db
 import (
 	"log"
 
+	"github.com/araquach/phorest-datahub/internal/models"
 	"gorm.io/gorm"
-	"staff-appraisals/internal/models"
 )
 
 // AutoMigrate handles dev schema refresh + migration.

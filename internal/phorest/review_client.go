@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"staff-appraisals/internal/models"
+	"github.com/araquach/phorest-datahub/internal/models"
 )
 
 type reviewAPIResponse struct {

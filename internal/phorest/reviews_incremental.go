@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"staff-appraisals/internal/models"
-	"staff-appraisals/internal/repos"
+	"github.com/araquach/phorest-datahub/internal/models"
+	"github.com/araquach/phorest-datahub/internal/repos"
 )
 
 func (r *Runner) RunIncrementalReviewsSync(ctx context.Context) error {

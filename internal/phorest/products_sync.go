@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"staff-appraisals/internal/models"
-	"staff-appraisals/internal/repos"
+	"github.com/araquach/phorest-datahub/internal/models"
+	"github.com/araquach/phorest-datahub/internal/repos"
 )
 
 // SyncProductsFromAPI pulls products/stock for all configured branches

@@ -7,9 +7,9 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"staff-appraisals/internal/config"
-	"staff-appraisals/internal/db"
-	"staff-appraisals/internal/phorest"
+	"github.com/araquach/phorest-datahub/internal/config"
+	"github.com/araquach/phorest-datahub/internal/db"
+	"github.com/araquach/phorest-datahub/internal/phorest"
 )
 
 func main() {

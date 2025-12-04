@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"staff-appraisals/internal/models"
+	"github.com/araquach/phorest-datahub/internal/models"
 )
 
 // ParsedReviews wraps the slice for symmetry with other parsers

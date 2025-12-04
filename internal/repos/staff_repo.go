@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
+	"github.com/araquach/phorest-datahub/internal/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"staff-appraisals/internal/models"
 )
 
 type StaffRepo struct {

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"staff-appraisals/internal/repos"
+	"github.com/araquach/phorest-datahub/internal/repos"
 )
 
 func (r *Runner) RunIncrementalTransactionsSync(ctx context.Context) error {

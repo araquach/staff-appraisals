@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/araquach/phorest-datahub/internal/config"
+	"github.com/araquach/phorest-datahub/internal/repos"
 	"gorm.io/gorm"
-	"staff-appraisals/internal/config"
-	"staff-appraisals/internal/repos"
 )
 
 type Runner struct {

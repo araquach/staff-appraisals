@@ -3,7 +3,7 @@ package phorest
 import (
 	"time"
 
-	"staff-appraisals/internal/repos"
+	"github.com/araquach/phorest-datahub/internal/repos"
 )
 
 // SyncStaffFromAPI fetches staff for each configured branch and upserts them.
