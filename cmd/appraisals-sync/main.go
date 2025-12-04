@@ -115,4 +115,12 @@ func main() {
 
 		logger.Println("✅ Incremental REVIEWS sync complete.")
 	}
+
+	if os.Getenv("RUN_PRODUCTS_SYNC") == "1" {
+		logger.Println("🚀 Running PRODUCTS sync…")
+		if err := runner.SyncProductsFromAPI(); err != nil {
+			logger.Fatalf("products sync failed: %v", err)
+		}
+		logger.Println("✅ PRODUCTS sync complete.")
+	}
 }
